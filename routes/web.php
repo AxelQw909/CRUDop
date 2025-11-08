@@ -19,3 +19,7 @@ Route::post('/register', function (Request $request) {
     ]);
     return "Регистрация успешна!";
 })->name('register.submit');
+
+Route::get('/lenta', function () {
+    return view('lenta');
+});
