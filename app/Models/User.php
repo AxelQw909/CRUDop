@@ -13,6 +13,7 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'email',
+        'avatar',
         'password',
     ];
 
@@ -37,5 +38,21 @@ class User extends Authenticatable
     public function comments()
     {
         return $this->hasMany(Comment::class);
+    }
+
+    public function getAvatarUrlAttribute()
+    {
+        if ($this->avatar) {
+            return asset('storage/' . $this->avatar);
+        }
+        
+        // Генерация аватара по умолчанию на основе имени
+        $name = urlencode($this->name);
+        return "https://ui-avatars.com/api/?name={$name}&color=7F9CF5&background=EBF4FF";
+    }
+
+    public function getPostsCountAttribute()
+    {
+        return $this->posts()->count();
     }
 }

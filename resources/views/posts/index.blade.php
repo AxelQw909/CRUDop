@@ -6,19 +6,24 @@
 <div class="space-y-6">
     @foreach($posts as $post)
         <div class="bg-gray-800 rounded-lg shadow-lg p-6">
-
+            <!-- Заголовок поста с пользователем -->
             <div class="flex items-center mb-4">
-                <div class="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold">
-                    {{ substr($post->user->name, 0, 1) }}
-                </div>
+                <img src="{{ $post->user->avatar_url }}" 
+                     alt="Avatar" 
+                     class="w-10 h-10 rounded-full object-cover">
                 <div class="ml-3">
                     <div class="font-semibold text-white">{{ $post->user->name }}</div>
                     <div class="text-gray-400 text-sm">{{ $post->created_at->diffForHumans() }}</div>
                 </div>
                 
-
+                <!-- Кнопки управления для автора поста -->
                 @if(auth()->id() === $post->user_id)
                 <div class="ml-auto flex space-x-2">
+                    <a href="{{ route('posts.edit', $post->id) }}" 
+                       class="text-blue-400 hover:text-blue-300 transition duration-200"
+                       title="Редактировать">
+                        <i class="fas fa-edit"></i>
+                    </a>
                     <button onclick="deletePost({{ $post->id }})" 
                             class="text-red-400 hover:text-red-300 transition duration-200"
                             title="Удалить">
@@ -28,7 +33,7 @@
                 @endif
             </div>
             
-
+            <!-- Контент поста -->
             @if($post->image)
                 <div class="mb-4">
                     <img src="{{ asset('storage/' . $post->image) }}" 
@@ -42,7 +47,7 @@
                 <p class="text-gray-300 whitespace-pre-line">{{ $post->content }}</p>
             </div>
             
-
+            <!-- Кнопки действий -->
             <div class="flex items-center justify-between border-t border-gray-700 pt-4">
                 <button onclick="toggleCommentForm({{ $post->id }})" 
                         class="flex items-center text-gray-400 hover:text-white transition duration-200">
@@ -55,7 +60,7 @@
                 </div>
             </div>
             
-
+            <!-- Форма комментария -->
             <div id="comment-form-{{ $post->id }}" class="hidden mt-4">
                 <form id="comment-form-{{ $post->id }}-form" method="POST" action="{{ route('comments.store', $post->id) }}">
                     @csrf
@@ -74,16 +79,16 @@
                 </form>
             </div>
             
-
+            <!-- Список комментариев -->
             @if($post->comments->count() > 0)
                 <div class="mt-4 space-y-3">
                     @foreach($post->comments as $comment)
                         <div class="bg-gray-700 rounded-lg p-3">
                             <div class="flex items-start justify-between">
                                 <div class="flex items-center">
-                                    <div class="w-6 h-6 bg-green-600 rounded-full flex items-center justify-center text-white text-xs font-bold mr-2">
-                                        {{ substr($comment->user->name, 0, 1) }}
-                                    </div>
+                                    <img src="{{ $comment->user->avatar_url }}" 
+                                         alt="Avatar" 
+                                         class="w-6 h-6 rounded-full object-cover mr-2">
                                     <span class="font-semibold text-white text-sm">{{ $comment->user->name }}</span>
                                 </div>
                                 

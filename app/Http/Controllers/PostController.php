@@ -54,6 +54,53 @@ class PostController extends Controller
         return redirect()->route('posts.index')->with('success', 'Пост успешно создан!');
     }
 
+    // Показать форму редактирования поста
+    public function edit($id)
+    {
+        $post = Post::where('user_id', auth()->id())
+                    ->whereNull('deleted_at')
+                    ->find($id);
+
+        if (!$post) {
+            return redirect()->route('posts.index')->with('error', 'Пост не найден.');
+        }
+
+        return view('posts.edit', compact('post'));
+    }
+
+    // Обновить пост
+    public function update(Request $request, $id)
+    {
+        $post = Post::where('user_id', auth()->id())
+                    ->whereNull('deleted_at')
+                    ->find($id);
+
+        if (!$post) {
+            return redirect()->route('posts.index')->with('error', 'Пост не найден.');
+        }
+
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'content' => 'required|string',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
+
+        if ($request->hasFile('image')) {
+            // Удаляем старое изображение
+            if ($post->image) {
+                Storage::disk('public')->delete($post->image);
+            }
+            $post->image = $request->file('image')->store('posts', 'public');
+        }
+
+        $post->update([
+            'title' => $request->title,
+            'content' => $request->content,
+        ]);
+
+        return redirect()->route('posts.index')->with('success', 'Пост успешно обновлен!');
+    }
+
     // Удалить пост
     public function destroy($id)
     {
@@ -63,6 +110,11 @@ class PostController extends Controller
 
         if (!$post) {
             return redirect()->route('posts.index')->with('error', 'Пост не найден.');
+        }
+
+        // Удаляем изображение поста
+        if ($post->image) {
+            Storage::disk('public')->delete($post->image);
         }
 
         $post->delete();

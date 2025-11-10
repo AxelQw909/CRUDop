@@ -15,7 +15,7 @@
     </style>
 </head>
 <body class="bg-gray-900 text-white">
-
+    <!-- Header -->
     <nav class="bg-gray-800 shadow-lg">
         <div class="max-w-7xl mx-auto px-4">
             <div class="flex justify-between items-center h-16">
@@ -31,7 +31,12 @@
                            class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition duration-200">
                             <i class="fas fa-plus mr-2"></i>Создать пост
                         </a>
-                        <span class="text-gray-300">{{ auth()->user()->name }}</span>
+                        <a href="{{ route('profile.show') }}" class="flex items-center space-x-2 text-gray-300 hover:text-white">
+                            <img src="{{ auth()->user()->avatar_url }}" 
+                                 alt="Avatar" 
+                                 class="w-8 h-8 rounded-full object-cover">
+                            <span>{{ auth()->user()->name }}</span>
+                        </a>
                         <form method="POST" action="{{ route('logout') }}" class="inline">
                             @csrf
                             <button type="submit" 
@@ -48,7 +53,7 @@
         </div>
     </nav>
 
-
+    <!-- Main Content -->
     <main class="max-w-4xl mx-auto py-6 px-4">
         @if(session('success'))
             <div class="bg-green-600 text-white p-4 rounded-lg mb-6">
@@ -65,6 +70,7 @@
         @yield('content')
     </main>
 
+    <!-- Scripts -->
     <script>
         function toggleCommentForm(postId) {
             const form = document.getElementById(`comment-form-${postId}`);
@@ -126,6 +132,17 @@
                 form.appendChild(methodField);
                 document.body.appendChild(form);
                 form.submit();
+            }
+        }
+
+        // Предпросмотр аватара
+        function previewAvatar(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('avatar-preview').src = e.target.result;
+                }
+                reader.readAsDataURL(input.files[0]);
             }
         }
     </script>
