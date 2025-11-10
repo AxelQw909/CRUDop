@@ -2,70 +2,50 @@
 
 namespace App\Http\Controllers;
 
-use App\ApiResponse;
 use App\Models\Comment;
 use App\Models\Post;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
 
 class CommentController extends Controller
 {
-    use ApiResponse;
-
-	public function index($postId)
+    public function __construct()
     {
-        $post = Post::whereNull('deleted_at')->find($postId);
-
-        if (!$post) {
-            return $this->error('Post not found', 404);
-        }
-
-        $comments = Comment::with('user')
-                          ->where('post_id', $postId)
-                          ->whereNull('deleted_at')
-                          ->latest()
-                          ->get();
-
-        return $this->success($comments);
+        $this->middleware('auth');
     }
 
     public function store(Request $request, $postId)
     {
-        $post = Post::whereNull('deleted_at')->find($postId);
-
-        if (!$post) {
-            return $this->error('Post not found', 404);
-        }
-
-        $validator = Validator::make($request->all(), [
+        $request->validate([
             'content' => 'required|string|max:1000',
         ]);
 
-        if ($validator->fails()) {
-            return $this->error($validator->errors()->first(), 422);
+        $post = Post::whereNull('deleted_at')->find($postId);
+
+        if (!$post) {
+            return redirect()->back()->with('error', 'Пост не найден.');
         }
 
-        $comment = Comment::create([
+        Comment::create([
             'content' => $request->content,
-            'user_id' => $request->user()->id,
+            'user_id' => auth()->id(),
             'post_id' => $postId,
         ]);
 
-        return $this->success($comment->load('user'), 'Comment created successfully', 201);
+        return redirect()->back()->with('success', 'Комментарий добавлен.');
     }
 
-    public function destroy(Request $request, $id)
+    public function destroy($id)
     {
-        $comment = Comment::where('user_id', $request->user()->id)
+        $comment = Comment::where('user_id', auth()->id())
                          ->whereNull('deleted_at')
                          ->find($id);
 
         if (!$comment) {
-            return $this->error('Comment not found', 404);
+            return redirect()->back()->with('error', 'Комментарий не найден.');
         }
 
         $comment->delete();
 
-        return $this->success(null, 'Comment deleted successfully');
+        return redirect()->back()->with('success', 'Комментарий удален.');
     }
 }

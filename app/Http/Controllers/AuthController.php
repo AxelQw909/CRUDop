@@ -2,80 +2,77 @@
 
 namespace App\Http\Controllers;
 
-use App\ApiResponse;
-use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
 {
-	use ApiResponse;
-
-	public function register(Request $request){
-		
-		$validator = Validator::make($request->all(),
-		[
-			'name' => 'required|string|max:255',
-			'email' => 'required|string|email|max:255|unique:users',
-			'password' => 'required|string|min:8|confirmed',
-		]);
-
-		if($validator->fails()){
-			return response()->json([
-				'errors'=> $validator->errors()
-			], 422);
-		}
-
-		$user = User::create([
-			'name' => $request->name,
-			'email' => $request->email,
-			'password' => Hash::make($request->password),
-		]);
-
-		$token = $user->createToken('auth_token')->plainTextToken;
-
-		return $this->success([
-            'user' => $user,
-            'token' => $token
-        ], 'User registered successfully');
-	}
-
-	public function login(Request $request)
+    public function __construct()
     {
-        $validator = Validator::make($request->all(), [
+        $this->middleware('guest')->except('logout');
+    }
+
+    // Показать форму регистрации
+    public function showRegisterForm()
+    {
+        return view('auth.register');
+    }
+
+    // Показать форму входа
+    public function showLoginForm()
+    {
+        return view('auth.login');
+    }
+
+    public function register(Request $request)
+    {
+        // Валидация для веб-запроса
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users',
+            'password' => 'required|string|min:8|confirmed',
+        ]);
+
+        // Создание пользователя
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+        ]);
+
+        // Автоматический вход после регистрации
+        Auth::login($user);
+
+        return redirect()->route('posts.index')->with('success', 'Добро пожаловать!');
+    }
+
+    public function login(Request $request)
+    {
+        // Валидация для веб-запроса
+        $credentials = $request->validate([
             'email' => 'required|email',
             'password' => 'required',
         ]);
 
-        if ($validator->fails()) {
-            return $this->error($validator->errors()->first(), 422);
+        // Попытка аутентификации
+        if (Auth::attempt($credentials, $request->filled('remember'))) {
+            $request->session()->regenerate();
+            return redirect()->route('posts.index')->with('success', 'Добро пожаловать!');
         }
 
-        if (!Auth::attempt($request->only('email', 'password'))) {
-            return $this->error('Invalid credentials', 401);
-        }
-
-        $user = User::where('email', $request->email)->first();
-        $token = $user->createToken('auth_token')->plainTextToken;
-
-        return $this->success([
-            'user' => $user,
-            'token' => $token
-        ], 'Login successful');
+        return back()->withErrors([
+            'email' => 'Неверные учетные данные.',
+        ])->onlyInput('email');
     }
 
     public function logout(Request $request)
     {
-       $request->user()->currentAccessToken()->delete();
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
 
-        return $this->success(null, 'Logged out successfully');
-    }
-
-    public function user(Request $request)
-    {
-        return $this->success($request->user());
+        return redirect()->route('login')->with('status', 'Вы вышли из системы.');
     }
 }

@@ -8,22 +8,27 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Post extends Model
 {
-    use HasFactory;
-	use SoftDeletes;
+    use HasFactory, SoftDeletes;
 
-	protected $fillable =[
-		'user_id',
-		'title',
-		'content',
-		'iamge'
-	];
+    protected $fillable = [
+        'user_id',
+        'title',
+        'content',
+        'image',
+    ];
 
-	public function user(){
-		return $this->belongsTo(User::class);
-	}
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 
-	public function comments(){
-		return $this->hasMany(Comment::class);
-	}
+    public function comments()
+    {
+        return $this->hasMany(Comment::class)->whereNull('deleted_at');
+    }
 
+    public function getImageUrlAttribute()
+    {
+        return $this->image ? asset('storage/' . $this->image) : null;
+    }
 }
