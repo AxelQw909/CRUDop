@@ -6,7 +6,7 @@
 <div class="space-y-6">
     @foreach($posts as $post)
         <div class="bg-gray-800 rounded-lg shadow-lg p-6">
-            <!-- Заголовок поста с пользователем -->
+            
             <div class="flex items-center mb-4">
                 <img src="{{ $post->user->avatar_url }}" 
                      alt="Avatar" 
@@ -16,7 +16,7 @@
                     <div class="text-gray-400 text-sm">{{ $post->created_at->diffForHumans() }}</div>
                 </div>
                 
-                <!-- Кнопки управления для автора поста -->
+                
                 @if(auth()->id() === $post->user_id)
                 <div class="ml-auto flex space-x-2">
                     <a href="{{ route('posts.edit', $post->id) }}" 
@@ -33,7 +33,7 @@
                 @endif
             </div>
             
-            <!-- Контент поста -->
+            
             @if($post->image)
                 <div class="mb-4">
                     <img src="{{ asset('storage/' . $post->image) }}" 
@@ -47,7 +47,7 @@
                 <p class="text-gray-300 whitespace-pre-line">{{ $post->content }}</p>
             </div>
             
-            <!-- Кнопки действий -->
+            
             <div class="flex items-center justify-between border-t border-gray-700 pt-4">
                 <button onclick="toggleCommentForm({{ $post->id }})" 
                         class="flex items-center text-gray-400 hover:text-white transition duration-200">
@@ -60,7 +60,7 @@
                 </div>
             </div>
             
-            <!-- Форма комментария -->
+            
             <div id="comment-form-{{ $post->id }}" class="hidden mt-4">
                 <form id="comment-form-{{ $post->id }}-form" method="POST" action="{{ route('comments.store', $post->id) }}">
                     @csrf
@@ -79,7 +79,7 @@
                 </form>
             </div>
             
-            <!-- Список комментариев -->
+            
             @if($post->comments->count() > 0)
                 <div class="mt-4 space-y-3">
                     @foreach($post->comments as $comment)

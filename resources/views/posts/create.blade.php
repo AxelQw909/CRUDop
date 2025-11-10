@@ -63,19 +63,19 @@
 </div>
 
 <script>
-    // Предпросмотр изображения
+    
     document.getElementById('image').addEventListener('change', function(e) {
         const file = e.target.files[0];
         if (file) {
             const reader = new FileReader();
             reader.onload = function(e) {
-                // Удаляем старый предпросмотр если есть
+                
                 const oldPreview = document.getElementById('image-preview');
                 if (oldPreview) {
                     oldPreview.remove();
                 }
                 
-                // Создаем новый предпросмотр
+                
                 const preview = document.createElement('div');
                 preview.id = 'image-preview';
                 preview.className = 'mt-4';

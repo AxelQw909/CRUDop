@@ -15,7 +15,7 @@ class ProfileController extends Controller
         $this->middleware('auth');
     }
 
-    // Показать страницу профиля
+    
     public function show()
     {
         $user = Auth::user();
@@ -24,7 +24,7 @@ class ProfileController extends Controller
         return view('profile.show', compact('user'));
     }
 
-    // Обновить профиль
+    
     public function update(Request $request)
     {
         $user = Auth::user();
@@ -37,16 +37,16 @@ class ProfileController extends Controller
             'new_password' => 'nullable|min:8|confirmed',
         ]);
 
-        // Обновляем аватар если загружен
+        
         if ($request->hasFile('avatar')) {
-            // Удаляем старый аватар
+            
             if ($user->avatar) {
                 Storage::disk('public')->delete($user->avatar);
             }
             $user->avatar = $request->file('avatar')->store('avatars', 'public');
         }
 
-        // Обновляем пароль если указан
+        
         if ($request->filled('current_password')) {
             if (!Hash::check($request->current_password, $user->password)) {
                 return back()->withErrors(['current_password' => 'Текущий пароль неверен.']);

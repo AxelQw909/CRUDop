@@ -6,7 +6,7 @@
 <div class="max-w-2xl mx-auto bg-gray-800 rounded-lg shadow-lg p-6">
     <h2 class="text-2xl font-bold text-center mb-6">Мой профиль</h2>
     
-    <!-- Статистика -->
+    
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
         <div class="bg-gray-700 rounded-lg p-4 text-center">
             <div class="text-2xl font-bold text-blue-400">{{ $user->posts_count }}</div>
@@ -25,7 +25,7 @@
     <form method="POST" action="{{ route('profile.update') }}" enctype="multipart/form-data">
         @csrf
         
-        <!-- Аватар -->
+        
         <div class="mb-6 text-center">
             <div class="relative inline-block">
                 <img id="avatar-preview" 
@@ -47,7 +47,7 @@
             @enderror
         </div>
         
-        <!-- Основная информация -->
+       
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
             <div>
                 <label for="name" class="block text-gray-300 mb-2">Имя</label>
@@ -76,7 +76,7 @@
             </div>
         </div>
         
-        <!-- Смена пароля -->
+ 
         <div class="mb-6">
             <h3 class="text-lg font-semibold text-gray-300 mb-4">Смена пароля</h3>
             

@@ -15,7 +15,7 @@
     </style>
 </head>
 <body class="bg-gray-900 text-white">
-    <!-- Header -->
+    
     <nav class="bg-gray-800 shadow-lg">
         <div class="max-w-7xl mx-auto px-4">
             <div class="flex justify-between items-center h-16">
@@ -53,7 +53,7 @@
         </div>
     </nav>
 
-    <!-- Main Content -->
+   
     <main class="max-w-4xl mx-auto py-6 px-4">
         @if(session('success'))
             <div class="bg-green-600 text-white p-4 rounded-lg mb-6">
@@ -70,7 +70,7 @@
         @yield('content')
     </main>
 
-    <!-- Scripts -->
+    
     <script>
         function toggleCommentForm(postId) {
             const form = document.getElementById(`comment-form-${postId}`);
@@ -135,7 +135,7 @@
             }
         }
 
-        // Предпросмотр аватара
+      
         function previewAvatar(input) {
             if (input.files && input.files[0]) {
                 const reader = new FileReader();

@@ -13,13 +13,13 @@ class PostController extends Controller
         $this->middleware('auth');
     }
 
-    // Показать форму создания поста
+    
     public function create()
     {
         return view('posts.create');
     }
 
-    // Показать ленту постов
+    
     public function index()
     {
         $posts = Post::with(['user', 'comments.user'])
@@ -30,7 +30,7 @@ class PostController extends Controller
         return view('posts.index', compact('posts'));
     }
 
-    // Сохранить новый пост
+    
     public function store(Request $request)
     {
         $request->validate([
@@ -54,7 +54,7 @@ class PostController extends Controller
         return redirect()->route('posts.index')->with('success', 'Пост успешно создан!');
     }
 
-    // Показать форму редактирования поста
+    
     public function edit($id)
     {
         $post = Post::where('user_id', auth()->id())
@@ -68,7 +68,7 @@ class PostController extends Controller
         return view('posts.edit', compact('post'));
     }
 
-    // Обновить пост
+    
     public function update(Request $request, $id)
     {
         $post = Post::where('user_id', auth()->id())
@@ -86,7 +86,7 @@ class PostController extends Controller
         ]);
 
         if ($request->hasFile('image')) {
-            // Удаляем старое изображение
+            
             if ($post->image) {
                 Storage::disk('public')->delete($post->image);
             }
@@ -101,7 +101,7 @@ class PostController extends Controller
         return redirect()->route('posts.index')->with('success', 'Пост успешно обновлен!');
     }
 
-    // Удалить пост
+    
     public function destroy($id)
     {
         $post = Post::where('user_id', auth()->id())
@@ -112,7 +112,7 @@ class PostController extends Controller
             return redirect()->route('posts.index')->with('error', 'Пост не найден.');
         }
 
-        // Удаляем изображение поста
+        
         if ($post->image) {
             Storage::disk('public')->delete($post->image);
         }

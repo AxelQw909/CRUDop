@@ -46,7 +46,7 @@ class User extends Authenticatable
             return asset('storage/' . $this->avatar);
         }
         
-        // Генерация аватара по умолчанию на основе имени
+    
         $name = urlencode($this->name);
         return "https://ui-avatars.com/api/?name={$name}&color=7F9CF5&background=EBF4FF";
     }
